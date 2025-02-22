@@ -1,0 +1,38 @@
+import PyPDF2
+
+def crack_pdf_password(pdf_file, wordlist_file):
+    """Attempts to crack the password of a PDF using a wordlist."""
+    # Open the PDF file
+    pdf_reader = PyPDF2.PdfReader(pdf_file)
+    
+    # Check if the PDF is encrypted
+    if not pdf_reader.is_encrypted:
+        print("The PDF file is not password protected.")
+        return
+    
+    # Open the wordlist file
+    with open(wordlist_file, 'r') as file:
+        passwords = file.readlines()
+    
+    # Try each password from the wordlist
+    for password in passwords:
+        password = password.strip()  # Remove any whitespace
+        
+        # Try decrypting the PDF with the current password
+        try:
+            if pdf_reader.decrypt(password):
+                print(f"\n[+] Password found: '{password}'")
+                return
+            else:
+                print(f"[-] Tried: '{password}' - Incorrect")
+        except Exception as e:
+            print(f"Error: {e}")
+    
+    print("\n[-] Password not found in the wordlist.")
+
+# Input the PDF file path and wordlist file path
+pdf_file = input("Enter the path to the password-protected PDF: ")
+wordlist_file = input("Enter the path to the wordlist file: ")
+
+# Start cracking the password
+crack_pdf_password(pdf_file, wordlist_file)
